@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config mode="client" xmlns:xsi="http://www.w3.org/2001/XMLSchema" xsi:noNamespaceSchemaLocation="config.xsd">
+  <domain id="adx-dock-platform" />
+  <servers>
+    <server ip="192.168.1.37" port="2280" />
+  </servers>
+</config>

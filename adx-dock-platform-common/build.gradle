@@ -1,0 +1,8 @@
+description = 'adx-dock-platform-common'
+
+dependencies {
+    compile project(':adx-dock-platform-api')
+    compile 'org.slf4j:log4j-over-slf4j'
+    compile 'org.slf4j:slf4j-api'
+    compile 'com.alibaba:fastjson'
+}

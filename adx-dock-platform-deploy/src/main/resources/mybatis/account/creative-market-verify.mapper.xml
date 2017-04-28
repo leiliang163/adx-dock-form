@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.CreativeMarketVerifyDaoImlpl">
+
+    <!-- 根据流量市场和验证类型查询创意审核ID列表 -->
+    <select id="selectList" parameterType="java.util.Map" resultType="com.mjoys.advert.biz.dto.CreativeMarketVerifyDto">
+        SELECT id,VERIFYID as verifyId
+        FROM mgr.t_creative_market_verify
+        <where>
+            <if test="market != null">
+                MARKET=#{market}
+            </if>
+            <if test="verifyStatus != null">
+                and VERIFY=#{verifyStatus}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据流量市场和验证类型查询adx端的创意ID列表 -->
+    <select id="selectAdxCreativeIds" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT ADX_CREATIVE_ID
+        FROM mgr.t_creative_market_verify
+        <where>
+            <if test="market != null">
+                MARKET=#{market}
+            </if>
+            <if test="verifyStatus != null">
+                and VERIFY=#{verifyStatus}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 批量更新审核状态 -->
+    <update id="updateVerifyStatus" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open=""
+                 close="" separator=";">
+            UPDATE mgr.t_creative_market_verify
+            set
+            VERIFY=#{item.verifyStatus}
+            , DISAPPROVALREASONS=#{item.refuseReason}
+            , ADX_CREATIVE_ID=#{item.marketCreativeId}
+            WHERE ID =#{item.id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,6 @@
+rootProject.name = 'adx-dock-platform'
+include 'adx-dock-platform-api'
+include 'adx-dock-platform-deploy'
+include 'adx-dock-platform-biz'
+include 'adx-dock-platform-common'
+

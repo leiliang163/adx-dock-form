@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.UserDaoImpl">
+
+    <resultMap id="UserMap" type="com.mjoys.advert.biz.dto.UserDto">
+        <result column="id" property="id"/>
+        <result column="COMPANY" property="company"/>
+        <result column="CONTACTPERSON" property="contactPerson"/>
+        <result column="EMAIL" property="email"/>
+        <result column="MOBILEPHONE" property="mobilePhone"/>
+        <result column="PHONENUMBER" property="telephone"/>
+        <result column="ADDRESS" property="address"/>
+    </resultMap>
+
+    <!-- 查询用户信息 -->
+    <select id="selectById" parameterType="java.lang.Long" resultMap="UserMap">
+        SELECT
+        id,COMPANY,
+        CONTACTPERSON,
+        EMAIL,MOBILEPHONE,
+        PHONENUMBER,
+        ADDRESS
+        FROM ads.t_userinfo1
+        WHERE id=#{id}
+    </select>
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- 主库数据源 -->
+	<bean id="adsDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close" parent="dataSourceParent">
+		<property name="url">
+			<value>${adp.datasource.ads.url}</value>
+		</property>
+		<property name="username">
+			<value>${adp.datasource.ads.username}</value>
+		</property>
+		<property name="password">
+			<value>${adp.datasource.ads.password}</value>
+		</property>
+	</bean>
+
+	<bean id="adsSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="adsDataSource"></property>
+		<property name="configLocation" value="classpath:mybatis/sqlMapConfig.xml"></property>
+		<property name="mapperLocations" value="classpath:mybatis/*/*.xml"></property>
+		<property name="typeAliasesPackage" value="com.lei.liang.test.*"></property>
+	</bean>
+
+	<bean id="adsSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="adsSqlSessionFactory" />
+	</bean>
+
+	<bean id="adsTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="adsDataSource" />
+	</bean>
+
+	<bean id="transactionTemplate"
+		class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager" ref="adsTransactionManager" />
+	</bean>
+
+</beans>

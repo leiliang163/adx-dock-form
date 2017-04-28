@@ -1,0 +1,7 @@
+description = 'adx-dock-platform-api'
+
+dependencies {
+    // 参数校验
+    compile('cn.mjoys:mjoys_common')
+    compile('com.mjoys:common-wolf')
+}

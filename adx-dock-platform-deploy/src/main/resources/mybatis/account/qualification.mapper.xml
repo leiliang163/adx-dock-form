@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.QualificationDaoImpl">
+
+    <resultMap id="QualificationMap" type="com.mjoys.advert.biz.dto.QualificationDto">
+        <result column="USERID" property="userId"/>
+        <result column="business_license_num" property="businessLicenseNum"/>
+        <result column="business_license_image_path" property="businessLicenseImagePath"/>
+        <result column="SITENAME" property="siteName"/>
+        <result column="icp_image_path" property="icpImagePath"/>
+        <result column="SITEURL" property="siteURL"/>
+        <result column="tax_registry_num" property="taxRegistryNum"/>
+        <result column="tax_registry_image_path" property="taxRegistryImagePath"/>
+        <result column="xiaomi_industry" property="xiaomiIndustry"/>
+    </resultMap>
+
+    <!-- 查询广告主的资质信息 -->
+    <select id="selectByUserId" parameterType="java.lang.Long" resultMap="QualificationMap">
+        SELECT USERID, business_license_num,business_license_image_path,SITENAME ,icp_image_path,
+        SITEURL,tax_registry_num,tax_registry_image_path,xiaomi_industry
+        FROM ads.t_qualification
+        where USERID=#{userId}
+    </select>
+
+</mapper>

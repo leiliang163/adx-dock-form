@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.QualAttachmentDaoImpl">
+
+    <!-- 查询广告主的资质信息 -->
+    <select id="selectListByAdvId" parameterType="java.lang.Long" resultType="com.mjoys.advert.biz.dto.QualAttachmentDto">
+        SELECT id, attachment_name, adv_id
+        FROM ads.t_qualification_attachment
+        where adv_id=#{advId}
+    </select>
+
+</mapper>

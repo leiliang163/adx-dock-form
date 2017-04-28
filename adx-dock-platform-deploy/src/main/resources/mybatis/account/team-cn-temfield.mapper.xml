@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.TeamCNTemFieldDaoImpl">
+
+    <resultMap id="TeamCNTemFieldMap" type="com.mjoys.advert.biz.dto.TeamCNTemFieldDto">
+        <result column="CREATIVE_ID" property="creativeId"/>
+        <result column="FIELD_NAME" property="fieldName"/>
+        <result column="FIELD_VALUE" property="fieldValue"/>
+    </resultMap>
+
+    <!-- 根据创意ID列表批量查询创意字段信息 -->
+    <select id="selectByCreativeIds" parameterType="java.util.List"
+            resultMap="TeamCNTemFieldMap">
+        SELECT CREATIVE_ID , FIELD_NAME, FIELD_VALUE
+        FROM mgr.t_team_crea_native_temp_field
+        where CREATIVE_ID IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

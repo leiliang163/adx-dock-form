@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.TeamCreativeVerifyDaoImpl">
+
+    <resultMap id="TeamCreativeVerifyMap" type="com.mjoys.advert.biz.dto.TeamCreativeVerifyDto">
+        <result column="id" property="id"/>
+        <result column="ADVID" property="advId"/>
+        <result column="TID" property="tId"/>
+        <result column="SID" property="sId"/>
+        <result column="TEMPLATE_ID" property="templateId"/>
+        <result column="CREATIVE_ID" property="creativeId"/>
+        <result column="match_templateid" property="matchTemplateId"/>
+    </resultMap>
+
+    <!-- 根据创意审核ID列表批量查询审核信息 -->
+    <select id="selectByIds" parameterType="java.util.List"
+            resultMap="TeamCreativeVerifyMap">
+        SELECT t1.id, t1.ADVID, t1.TID, t1.SID, t1.TEMPLATE_ID , t1.CREATIVE_ID,t2.match_templateid
+        FROM mgr.t_team_creative_verify t1,mgr.t_creative_native_temp t2
+        where t1.id IN
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and t2.id=t1.template_id
+    </select>
+
+    <!-- 批量查询审核ID，通过创意ID列表 -->
+    <select id="selectIdsByCreativeIds" parameterType="java.util.List"
+            resultMap="TeamCreativeVerifyMap">
+        SELECT id
+        FROM mgr.t_team_creative_verify
+        where CREATIVE_ID IN
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 批量查询审核ID，通过创意ID列表 -->
+    <select id="selectByCreativeIds" parameterType="java.util.List"
+            resultMap="TeamCreativeVerifyMap">
+        SELECT id, CREATIVE_ID
+        FROM mgr.t_team_creative_verify
+        where CREATIVE_ID IN
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

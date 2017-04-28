@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.QualVerifyDaoImpl">
+
+    <!-- 新增广告主审核记录 -->
+    <insert id="insert" parameterType="com.mjoys.advert.biz.dto.QualVerifyDto">
+		insert into
+		ads.t_qualification_verify(
+		adv_id,
+		market_advid,
+		market,
+		status,
+		reason
+		)
+		VALUES
+		(
+		#{advId},
+		#{marketAdvId},
+		#{market},
+		#{status},
+		#{reason}
+		)
+	</insert>
+
+    <!-- 批量审核通过 -->
+    <update id="updatePassList" parameterType="java.util.List">
+        UPDATE ads.t_qualification_verify
+        set status=4
+        WHERE market_advid IN
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+
+    <!-- 批量审核拒绝 -->
+    <update id="updateRejectList" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open=""
+                 close="" separator=";">
+            update ads.t_qualification_verify
+            set status=3, reason=#{item.reason}
+            where market_advid = #{item.marketAdvId}
+        </foreach>
+    </update>
+
+    <!-- 根据审核状态和adx类型查询对应adx端的广告主ID列表 -->
+    <select id="selectMarketAdvIds" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT market_advid
+        FROM ads.t_qualification_verify
+        <where>
+            <if test="status != null">
+                status=#{status}
+            </if>
+            <if test="market != null">
+                and market=#{market}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="selectListByStatus" parameterType="java.util.Map"
+            resultType="com.mjoys.advert.biz.dto.QualVerifyDto">
+        SELECT id
+        FROM ads.t_qualification_verify
+        where adv_id=#{advId} and market=#{market}
+        <if test="status != null and status.size>0">
+            and status in
+            <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="selectListByMarket" parameterType="java.util.Map"
+            resultType="com.mjoys.advert.biz.dto.QualVerifyDto">
+        SELECT adv_id as advId,market_advid as marketAdvId
+        FROM ads.t_qualification_verify
+        where market=#{market} and
+        adv_id in
+        <foreach collection="advIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

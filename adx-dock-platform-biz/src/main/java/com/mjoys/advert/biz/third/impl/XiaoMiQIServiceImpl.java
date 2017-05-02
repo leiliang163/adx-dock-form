@@ -34,13 +34,13 @@ import java.util.List;
 @Service("xiaoMiQIService")
 public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService {
 
-    @Value("${xiaomi.adx.domain}")
+    @Value("${adp.xiaomi.adx.domain}")
     private String xiaoMiDomain;
 
-    @Value("${xiaomi.client.id}")
+    @Value("${adp.xiaomi.client.id}")
     private String xiaoClientId;
 
-    @Value("${xiaomi.client.secret}")
+    @Value("${adp.xiaomi.client.secret}")
     private String xiaoClientSecret;
 
     @Override
@@ -142,8 +142,6 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
 
     @Override
     public List<CreativeMarketVerifyDto> addMaterial(List<XiaoMiMaterialDetail> materials) {
-        logger.info("addMaterial begin, the materials={}", materials);
-
         if (CollectionUtils.isEmpty(materials)) {
             return null;
         }
@@ -229,7 +227,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
     private CreativeMarketVerifyDto buildCreativeMarketVerify(JSONObject object) {
         CreativeMarketVerifyDto addMaterialRsp = new CreativeMarketVerifyDto();
         addMaterialRsp.setRefuseReason(object.getString("desc"));
-        addMaterialRsp.setVerifyStatus(isXiaoMiSuccess(object) ? CreativeMarketVerifyDto.VERIFY_OF_PEDING_AUDIT : CreativeMarketVerifyDto.VERIFY_OF_PUSH_FAILED);
+        addMaterialRsp.setVerifyStatus(isXiaoMiSuccess(object) ? CreativeMarketVerifyDto.VERIFY_OF_PUSH_ALREADY : CreativeMarketVerifyDto.VERIFY_OF_PUSH_FAILED);
         addMaterialRsp.setId(object.getLong("creativeId"));
         addMaterialRsp.setMarketCreativeId(object.getString("materialId"));
 
@@ -249,7 +247,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
         NameValuePair[] params = new NameValuePair[materialIds.size()];
 
         for (int i = 0; i < materialIds.size(); i++) {
-            params[i] = new NameValuePair("advId", materialIds.get(i));
+            params[i] = new NameValuePair("materialId", materialIds.get(i));
         }
         getMethod.setQueryString(params);
 
@@ -266,7 +264,12 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
                 qIStatusList = new ArrayList<>(dataJsonArray.size());
 
                 for (Object dataJson : dataJsonArray) {
-                    qIStatusList.add(buildCreativeQIStatus(JSONObject.parseObject(dataJson.toString())));
+                    // 审核中的创意不用更新状态
+                    JSONObject object = JSONObject.parseObject(dataJson.toString());
+                    if (CreativeMarketVerifyDto.VERIFY_OF_PUSH_IN != object.getIntValue("status")) {
+                        qIStatusList.add(buildCreativeQIStatus(object));
+                    }
+
                 }
             }
 
@@ -312,10 +315,28 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
         CreativeMarketVerifyDto xiaoMiMaterialQIStatus = new CreativeMarketVerifyDto();
         xiaoMiMaterialQIStatus.setMarketCreativeId(object.getString("materialId"));
         xiaoMiMaterialQIStatus.setRefuseReason(object.getString("rejectReason"));
-        xiaoMiMaterialQIStatus.setVerifyStatus(object.getIntValue("status"));
+        xiaoMiMaterialQIStatus.setVerifyStatus(creativeVerfyStatusSwitch(object.getIntValue("status")));
         xiaoMiMaterialQIStatus.setId(object.getLongValue("creativeId"));
 
         return xiaoMiMaterialQIStatus;
+    }
+
+    /**
+     * 流量市场侧创意审核状态转换为DSP端审核状态.
+     *
+     * @param marketVerfyStatus the market verfy status
+     *
+     * @return the int
+     */
+    private int creativeVerfyStatusSwitch(int marketVerfyStatus) {
+        switch (marketVerfyStatus) {
+            case 3:
+                return CreativeMarketVerifyDto.VERIFY_OF_REFUSE;
+            case 4:
+                return CreativeMarketVerifyDto.VERIFY_OF_PASS;
+            default:
+                return CreativeMarketVerifyDto.VERIFY_OF_REFUSE;
+        }
     }
 
     /**

@@ -98,7 +98,7 @@ public class AdvertiserQIBoImpl extends BaseService implements IAdvertiserQIBo {
     public void updateCreativeQIStatus() {
 
         // 1. 查询待审核的创意
-        List<String> adxCreativeIds = creativeService.getAdxCreativeIds(Enums.Market.XIAOMI_VALUE, CreativeMarketVerifyDto.VERIFY_OF_PEDING_AUDIT);
+        List<String> adxCreativeIds = creativeService.getAdxCreativeIds(Enums.Market.XIAOMI_VALUE, CreativeMarketVerifyDto.VERIFY_OF_PUSH_ALREADY);
         logger.info("待审核的创意Id列表={}", adxCreativeIds);
 
         creativeService.updateVerifyStatus(xiaoMiQIService.queryMaterialQIStatus(adxCreativeIds));

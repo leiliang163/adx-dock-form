@@ -46,7 +46,7 @@ public class IAdveQITask implements InitializingBean {
      *
      * @return
      */
-    private TimerTask exectueAddCreative() {
+    public TimerTask exectueAddCreative() {
         return new TimerTask() {
 
             @Override
@@ -66,7 +66,7 @@ public class IAdveQITask implements InitializingBean {
      *
      * @return
      */
-    private TimerTask exectueUpdateCtQIStatus() {
+    public TimerTask exectueUpdateCtQIStatus() {
         return new TimerTask() {
             @Override
             public void run() {
@@ -85,7 +85,7 @@ public class IAdveQITask implements InitializingBean {
      *
      * @return
      */
-    private TimerTask exectueUpdateAdvQIStatus() {
+    public TimerTask exectueUpdateAdvQIStatus() {
         return new TimerTask() {
             @Override
             public void run() {

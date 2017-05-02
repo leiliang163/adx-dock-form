@@ -27,7 +27,7 @@ public enum ThirdUrlEnums {
     /**
      * 小米查询创意审核状态接口
      */
-    XIAOMI_QUERY_CREATIVE_QI("/audit/v1/creative/queryByAuditId"),;
+    XIAOMI_QUERY_CREATIVE_QI("/audit/v1/creative/query"),;
 
     private String thirdUlr;
 

@@ -41,6 +41,7 @@
             VERIFY=#{item.verifyStatus}
             , DISAPPROVALREASONS=#{item.refuseReason}
             , ADX_CREATIVE_ID=#{item.marketCreativeId}
+            ,TIME_MODIFIED=now()
             WHERE ID =#{item.id}
         </foreach>
     </update>

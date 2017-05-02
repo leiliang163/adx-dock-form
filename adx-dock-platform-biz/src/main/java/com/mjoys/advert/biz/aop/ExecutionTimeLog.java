@@ -17,10 +17,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class ExecutionTimeLog {
+
     /**
      * The Constant FLAT.
      */
-    private static final String FLAT = ".";
+    private static final String FLAT  = ".";
 
     /**
      * The Constant BLANK.
@@ -30,7 +31,8 @@ public class ExecutionTimeLog {
     /**
      * Remote service aspect.
      */
-    @Pointcut("(execution(public * com.mjoys.advert.biz.remoteservice.*.*(..))) || (execution(public * com.mjoys.advert.deploy.controller.*.*(..)))")
+    @Pointcut("(execution(public * com.mjoys.advert.biz.remoteservice.*.*(..))) "
+              + "|| (execution(public * com.mjoys.advert.deploy.controller.*.*(..))) ")
     public void remoteServiceAspect() {
         //
     }
@@ -53,7 +55,7 @@ public class ExecutionTimeLog {
     @Around("remoteServiceAspect()")
     public Object remoteServiceAround(ProceedingJoinPoint joinPoint) throws Throwable {
         TimeProfileUtils.start();
-        Object obj= around(joinPoint);
+        Object obj = around(joinPoint);
         TimeProfileUtils.end();
         return obj;
     }
@@ -80,7 +82,8 @@ public class ExecutionTimeLog {
     private Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         Signature signature = joinPoint.getSignature();
         String fullName = signature.getDeclaringTypeName();
-        TimeProfileUtils.enter(fullName.substring(fullName.lastIndexOf(FLAT) + 1) + BLANK + signature.getName());
+        TimeProfileUtils.enter(fullName.substring(fullName.lastIndexOf(FLAT) + 1) + BLANK
+                               + signature.getName());
         Object ret = joinPoint.proceed();
         TimeProfileUtils.release();
         return ret;

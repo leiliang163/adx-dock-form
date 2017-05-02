@@ -11,7 +11,9 @@
 		market_advid,
 		market,
 		status,
-		reason
+		reason,
+		TIME_CREATE,
+		TIME_MODIFIED
 		)
 		VALUES
 		(
@@ -19,14 +21,16 @@
 		#{marketAdvId},
 		#{market},
 		#{status},
-		#{reason}
+		#{reason},
+		now(),
+		now()
 		)
 	</insert>
 
     <!-- 批量审核通过 -->
     <update id="updatePassList" parameterType="java.util.List">
         UPDATE ads.t_qualification_verify
-        set status=4
+        set status=4,TIME_MODIFIED=now()
         WHERE market_advid IN
         <foreach item="item" index="index" collection="list"
                  open="(" separator="," close=")">
@@ -40,7 +44,7 @@
         <foreach collection="list" item="item" index="index" open=""
                  close="" separator=";">
             update ads.t_qualification_verify
-            set status=3, reason=#{item.reason}
+            set status=3, reason=#{item.reason},TIME_MODIFIED=now()
             where market_advid = #{item.marketAdvId}
         </foreach>
     </update>

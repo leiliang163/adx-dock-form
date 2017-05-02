@@ -153,19 +153,7 @@ subprojects {
 
             // mjoys
             dependency('cn.mjoys:mjoys_common:0.0.5.4')
-            dependency('com.mjoys:common-wolf:0.0.5')
-
-            //cat
-            dependency('com.dianping.cat:cat-client:1.3.6')
-            dependency('org.codehaus.plexus:plexus-container-default:1.6')
-            dependency('org.codehaus.plexus:plexus-classworlds:2.5.1')
-            dependency('org.codehaus.plexus:plexus-utils:3.0.20')
-            dependency('org.unidal.framework:foundation-service:2.5.0')
-            dependency('io.netty:netty-all:4.0.24.Final')
-            dependency('com.google.code.gson:gson:2.2.4')
-
-            // redis
-            dependency 'redis.clients:jedis:2.8.1'
+            dependency('com.mjoys:common-wolf:0.0.6.l4')
         }
     }
 

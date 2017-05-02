@@ -11,20 +11,14 @@ dependencies {
     compile('org.mybatis:mybatis')
     compile('org.mybatis:mybatis-spring')
     compile('mysql:mysql-connector-java')
-
-    // spring
-//    compile('org.springframework:spring-context')
-//    compile('org.springframework:spring-context-support')
-//    compile('org.springframework:spring-orm')
-//    compile('org.springframework:spring-beans')
-//    compile('org.springframework:spring-core')
-//    compile('org.springframework:spring-web')
-//    testCompile('org.springframework:spring-test')
+    //apache
+    compile('org.apache.velocity:velocity')
+    compile('javax.mail:mail')
 
     compile('commons-io:commons-io')
     compile('commons-collections:commons-collections')
-    compile ('commons-codec:commons-codec')
-    compile ('commons-httpclient:commons-httpclient')
+    compile('commons-codec:commons-codec')
+    compile('commons-httpclient:commons-httpclient')
 
     // dubbo
     compile('com.alibaba:dubbo')
@@ -38,19 +32,10 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jdbc")
     compile("org.springframework.boot:spring-boot-starter-redis")
 
-
     // aspectj
     compile('org.aspectj:aspectjrt')
     compile('org.aspectj:aspectjweaver')
 
-    //cat
-    compile('com.dianping.cat:cat-client')
-    compile('org.codehaus.plexus:plexus-container-default')
-    compile('org.codehaus.plexus:plexus-classworlds')
-    compile('org.codehaus.plexus:plexus-utils')
-    compile('org.unidal.framework:foundation-service')
-    compile('io.netty:netty-all')
-    compile('com.google.code.gson:gson')
 }
 
 

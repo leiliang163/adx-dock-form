@@ -19,7 +19,7 @@ public interface IQualVerifyDao {
      *
      * @param qualVerifyDto the qual verify dto
      *
-     * @return int
+     * @return int int
      */
     int insert(QualVerifyDto qualVerifyDto);
 
@@ -28,7 +28,7 @@ public interface IQualVerifyDao {
      *
      * @param marketAdvIds 流量市场广告主ID列表
      *
-     * @return int
+     * @return int int
      */
     int updatePassList(List<String> marketAdvIds);
 
@@ -41,7 +41,7 @@ public interface IQualVerifyDao {
      *
      * @param params the params
      *
-     * @return int
+     * @return int int
      */
     int updateRejectList(List<Map<String, Object>> params);
 
@@ -51,7 +51,7 @@ public interface IQualVerifyDao {
      * @param status the status
      * @param market the market
      *
-     * @return list
+     * @return list list
      */
     List<String> selectMarketAdvIds(Integer status, Integer market);
 
@@ -62,7 +62,7 @@ public interface IQualVerifyDao {
      * @param market 流量市场类型
      * @param status 审核状态列表
      *
-     * @return list
+     * @return list list
      */
     List<QualVerifyDto> selectListByStatus(Long advId, int market, List<Integer> status);
 
@@ -72,7 +72,22 @@ public interface IQualVerifyDao {
      * @param advIds the adv ids
      * @param market 流量市场类型
      *
-     * @return list
+     * @return list list
      */
     List<QualVerifyDto> selectListByMarket(List<Long> advIds, int market);
+
+    /**
+     * 修改审核状态.
+     * <p>
+     * 必传参数说明：
+     * marketAdvId：adx端广告主ID<br/>
+     * status：状态<br/>
+     *
+     * @param marketAdvId the market adv id
+     * @param status      the status
+     * @param reason      the reason
+     *
+     * @return int int
+     */
+    int updateByMarketId(String marketAdvId, int status, String reason);
 }

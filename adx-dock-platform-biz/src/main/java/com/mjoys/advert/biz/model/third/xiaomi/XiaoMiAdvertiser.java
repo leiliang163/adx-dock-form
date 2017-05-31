@@ -15,6 +15,7 @@ public class XiaoMiAdvertiser implements Serializable {
 
     private static final long serialVersionUID = 1468732344070278793L;
 
+
     /**
      * 公司注册名称
      */
@@ -91,6 +92,19 @@ public class XiaoMiAdvertiser implements Serializable {
      * 资质，特殊资质
      */
     private JSONArray qualifications;
+
+    /**
+     * 流量市场侧广告主ID.
+     */
+    private String            advId;
+
+    public String getAdvId() {
+        return advId;
+    }
+
+    public void setAdvId(String advId) {
+        this.advId = advId;
+    }
 
     public String getCompanyName() {
         return companyName;

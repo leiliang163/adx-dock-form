@@ -4,6 +4,7 @@ import com.mjoys.advert.biz.dao.BaseDao;
 import com.mjoys.advert.biz.dao.IQualVerifyDao;
 import com.mjoys.advert.biz.dto.QualVerifyDto;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -63,10 +64,23 @@ public class QualVerifyDaoImpl extends BaseDao implements IQualVerifyDao {
 
     @Override
     public List<QualVerifyDto> selectListByMarket(List<Long> advIds, int market) {
-        Map<String, Object> param = new HashMap<>(3);
+        if(CollectionUtils.isEmpty(advIds)){
+            return ListUtils.EMPTY_LIST;
+        }
+        Map<String, Object> param = new HashMap<>(2);
         param.put("advIds", advIds);
         param.put("market", market);
 
         return getAdsSqlSession().selectList(getStamentNameSpace("selectListByMarket"), param);
+    }
+
+    @Override
+    public int updateByMarketId(String marketAdvId, int status, String reason) {
+        Map<String, Object> param = new HashMap<>(3);
+        param.put("marketAdvId", marketAdvId);
+        param.put("status", status);
+        param.put("reason", reason);
+
+        return getAdsSqlSession().update(getStamentNameSpace("updateByMarketId"), param);
     }
 }

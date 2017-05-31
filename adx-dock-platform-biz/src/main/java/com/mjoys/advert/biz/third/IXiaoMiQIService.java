@@ -5,7 +5,6 @@ import com.mjoys.advert.biz.dto.QualVerifyDto;
 import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiAdvertiser;
 import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiAdvertiserQIStatus;
 import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiMaterialDetail;
-import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiMaterialQIStatus;
 
 import java.util.List;
 
@@ -24,6 +23,14 @@ public interface IXiaoMiQIService{
      * @param ads
      */
     QualVerifyDto addAdvertiser(XiaoMiAdvertiser ads);
+
+    /**
+     * 在小米adx平台新增广告主
+     * 失败会抛出内部异常
+     *
+     * @param ads
+     */
+    QualVerifyDto updateAdvertiser(XiaoMiAdvertiser ads);
 
     /**
      * 批量查询广告主资质审核状态

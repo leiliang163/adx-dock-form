@@ -4,14 +4,16 @@ import cn.oasistech.pbinfo.Enums;
 import com.mjoys.advert.biz.bo.IAdvertiserQIBo;
 import com.mjoys.advert.biz.dto.CreativeMarketVerifyDto;
 import com.mjoys.advert.biz.dto.QualVerifyDto;
-import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiAdvertiserQIStatus;
-import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiMaterialDetail;
-import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiMaterialQIStatus;
+import com.mjoys.advert.biz.model.third.xiaomi.*;
 import com.mjoys.advert.biz.service.IAdvertiserService;
 import com.mjoys.advert.biz.service.ICreativeService;
 import com.mjoys.advert.biz.service.impl.BaseService;
 import com.mjoys.advert.biz.third.IXiaoMiQIService;
+import com.mjoys.advert.common.constants.ErrorCode;
+import com.mjoys.advert.common.exception.InnerException;
+import com.mjoys.common.wolf.cat.CatUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,19 +32,51 @@ import java.util.Map;
 public class AdvertiserQIBoImpl extends BaseService implements IAdvertiserQIBo {
 
     @Autowired
-    private IXiaoMiQIService xiaoMiQIService;
+    private IXiaoMiQIService   xiaoMiQIService;
 
     @Autowired
-    private ICreativeService creativeService;
+    private ICreativeService   creativeService;
 
     @Autowired
     private IAdvertiserService advertiserService;
 
     @Override
+    public void addAdvertiserForXiaoMi(Long advId) {
+
+        // 1. 判断广告主是否上传过
+        if (advertiserService.isSuccessOrAuditOfStatus(advId, Enums.Market.XIAOMI_VALUE)) {
+            // 如果处于审核中或者审核通过， 不允许再次上传
+            throw new InnerException(ErrorCode.E14001);
+        }
+
+        // 2. 构建上传所需信息
+        XiaoMiAdvertiser xiaoMiAdvertiser = advertiserService.getAdvertiserDetailForXiaoMi(advId);
+        logger.info("addAdvertiser begin, the XiaoMiAdvertiser=[{}]", xiaoMiAdvertiser);
+
+        // 3. 上传
+        QualVerifyDto qualVerifyDto = xiaoMiQIService.addAdvertiser(xiaoMiAdvertiser);
+        if (QualVerifyDto.STATUS_OF_PUSH_FAILED == qualVerifyDto.getStatus()) {
+            if (StringUtils.isNotBlank(qualVerifyDto.getReason())) {
+                throw new InnerException(ErrorCode.E12005.getErrorCode(),
+                                         qualVerifyDto.getReason());
+            }
+
+            throw new InnerException(ErrorCode.E12005);
+        }
+        // 4. 新增一条上传记录
+        qualVerifyDto.setAdvId(advId);
+        qualVerifyDto.setMarket(Enums.Market.XIAOMI_VALUE);
+
+        advertiserService.insertQIRecord(qualVerifyDto);
+
+    }
+
+    @Override
     public void updateAdvertiserQIStatus() {
 
         // 1.去审核记录表中查询处于审核中的记录
-        List<String> marketAdvIds = advertiserService.selectMarketAdvIds(QualVerifyDto.STATUS_OF_AUDIT, Enums.Market.XIAOMI_VALUE);
+        List<String> marketAdvIds = advertiserService.selectMarketAdvIds(QualVerifyDto.STATUS_OF_AUDIT,
+                                                                         Enums.Market.XIAOMI_VALUE);
         logger.info("待审核的广告主列表={}", marketAdvIds);
 
         if (CollectionUtils.isEmpty(marketAdvIds)) {
@@ -98,10 +132,38 @@ public class AdvertiserQIBoImpl extends BaseService implements IAdvertiserQIBo {
     public void updateCreativeQIStatus() {
 
         // 1. 查询待审核的创意
-        List<String> adxCreativeIds = creativeService.getAdxCreativeIds(Enums.Market.XIAOMI_VALUE, CreativeMarketVerifyDto.VERIFY_OF_PUSH_ALREADY);
+        List<String> adxCreativeIds = creativeService.getAdxCreativeIds(Enums.Market.XIAOMI_VALUE,
+                                                                        CreativeMarketVerifyDto.VERIFY_OF_PUSH_FAILED);
         logger.info("待审核的创意Id列表={}", adxCreativeIds);
 
         creativeService.updateVerifyStatus(xiaoMiQIService.queryMaterialQIStatus(adxCreativeIds));
     }
 
+    @Override
+    public void updateAdvertiserForXiaomi(Long advId, String marketAdvId) {
+
+        // 2. 构建上传所需信息
+        XiaoMiAdvertiser xiaoMiAdvertiser = advertiserService.getAdvertiserDetailForXiaoMi(advId);
+        xiaoMiAdvertiser.setAdvId(marketAdvId);
+
+        // 3. 上传
+        logger.info("updateAdvertiser begin, the XiaoMiAdvertiser=[{}]", xiaoMiAdvertiser);
+
+        QualVerifyDto qualVerifyDto = xiaoMiQIService.updateAdvertiser(xiaoMiAdvertiser);
+        if (QualVerifyDto.STATUS_OF_PUSH_FAILED == qualVerifyDto.getStatus()) {
+            if (StringUtils.isNotBlank(qualVerifyDto.getReason())) {
+                throw new InnerException(ErrorCode.E12005.getErrorCode(),
+                                         qualVerifyDto.getReason());
+            }
+
+            throw new InnerException(ErrorCode.E12005);
+        }
+        // 4. 修改一条上传记录
+        qualVerifyDto.setAdvId(advId);
+        qualVerifyDto.setMarket(Enums.Market.XIAOMI_VALUE);
+
+        advertiserService.updateByMarketId(marketAdvId, qualVerifyDto.getStatus(),
+                                           qualVerifyDto.getReason());
+
+    }
 }

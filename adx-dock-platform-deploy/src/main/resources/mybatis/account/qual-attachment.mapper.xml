@@ -4,8 +4,9 @@
 <mapper namespace="com.mjoys.advert.biz.dao.impl.QualAttachmentDaoImpl">
 
     <!-- 查询广告主的资质信息 -->
-    <select id="selectListByAdvId" parameterType="java.lang.Long" resultType="com.mjoys.advert.biz.dto.QualAttachmentDto">
-        SELECT id, attachment_name, adv_id
+    <select id="selectListByAdvId" parameterType="java.lang.Long"
+            resultType="com.mjoys.advert.biz.dto.QualAttachmentDto">
+        SELECT id, attachment_name, attachment_url,adv_id
         FROM ads.t_qualification_attachment
         where adv_id=#{advId}
     </select>

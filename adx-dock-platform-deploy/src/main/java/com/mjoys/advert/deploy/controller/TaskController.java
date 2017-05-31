@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("task")
-public class TaskController extends BaseController{
+public class TaskController extends BaseController {
 
     @Autowired
     private IAdvertiserQIBo advertiserQIBo;
@@ -27,7 +27,14 @@ public class TaskController extends BaseController{
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "updateAdvertiserQIStatus")
     public Result<Boolean> updateAdvertiserQIStatus() {
-        advertiserQIBo.updateAdvertiserQIStatus();
+        try {
+            logger.info("查询广告主审核状态开始");
+            advertiserQIBo.updateAdvertiserQIStatus();
+            logger.info("查询广告主审核状态结束");
+        } catch (Exception e) {
+            logger.warn("查询广告主审核状态失败", e);
+        }
+
         return successResult(true);
     }
 
@@ -37,8 +44,16 @@ public class TaskController extends BaseController{
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "addCreative")
     public Result<Boolean> addCreative() {
-        advertiserQIBo.addCreative();
+        try {
+            logger.info("提交创意审核开始");
+            advertiserQIBo.addCreative();
+            logger.info("提交创意审核结束");
+        } catch (Exception e) {
+            logger.warn("提交创意审核失败", e);
+        }
+
         return successResult(true);
+
     }
 
     /**
@@ -47,7 +62,14 @@ public class TaskController extends BaseController{
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "updateCreativeQIStatus")
     public Result<Boolean> updateCreativeQIStatus() {
-        advertiserQIBo.updateCreativeQIStatus();
+        try {
+            logger.info("查询创意审核状态开始");
+            advertiserQIBo.updateCreativeQIStatus();
+            logger.info("查询创意审核状态结束");
+        } catch (Exception e) {
+            logger.warn("查询创意审核状态失败", e);
+        }
+
         return successResult(true);
     }
 }

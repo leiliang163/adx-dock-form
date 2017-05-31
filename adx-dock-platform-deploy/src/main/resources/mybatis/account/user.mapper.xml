@@ -21,7 +21,7 @@
         EMAIL,MOBILEPHONE,
         PHONENUMBER,
         ADDRESS
-        FROM ads.t_userinfo1
+        FROM ads.t_userinfo
         WHERE id=#{id}
     </select>
 

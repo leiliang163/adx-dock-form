@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("remoteTest")
 public class RemoteTestController extends BaseController {
+
+    /**
+     * The Remote qi backend service.
+     */
     @Autowired
     private RemoteQIBackendService remoteQIBackendService;
 
@@ -25,11 +29,26 @@ public class RemoteTestController extends BaseController {
      * 广告主资质审核接口
      *
      * @param advId 广告主ID
-     * @return
+     * @return dubbo result
      */
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "addAdvertiserForXiaomi")
     public DubboResult<Boolean> addAdvertiserForXiaomi(@RequestParam Long advId) {
+        logger.info("提交广告主审核开始");
         return remoteQIBackendService.addAdvertiserForXiaoMi(advId);
+    }
+
+    /**
+     * 修改广告主资质接口.
+     *
+     * @param marketAdvId the market adv id
+     * @return the dubbo result
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, value = "updateAdvertiserForXiaomi")
+    public DubboResult<Boolean> updateAdvertiserForXiaomi(@RequestParam Long advId,
+                                                          @RequestParam String marketAdvId) {
+        logger.info("修改广告主审核开始");
+        return remoteQIBackendService.updateAdvertiserForXiaomi(advId, marketAdvId);
     }
 }

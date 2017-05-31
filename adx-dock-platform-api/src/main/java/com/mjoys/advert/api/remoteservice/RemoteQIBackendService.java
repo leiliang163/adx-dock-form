@@ -14,8 +14,16 @@ public interface RemoteQIBackendService {
      * 广告主资质审核接口
      *
      * @param advId 广告主ID
-     * @return
+     * @return dubbo result
      */
     DubboResult<Boolean> addAdvertiserForXiaoMi(Long advId);
+
+    /**
+     * 广告主资质审核接口
+     *
+     * @param marketAdvId 流量市场侧的广告主ID
+     * @return dubbo result
+     */
+    DubboResult<Boolean> updateAdvertiserForXiaomi(Long advId, String marketAdvId);
 
 }

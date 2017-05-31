@@ -11,6 +11,7 @@ import com.mjoys.advert.biz.dto.UserDto;
 import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiAdvertiser;
 import com.mjoys.advert.biz.service.IAdvertiserService;
 import com.mjoys.advert.biz.utils.StringTool;
+import com.mjoys.advert.biz.utils.UrlUtils;
 import com.mjoys.advert.common.constants.ErrorCode;
 import com.mjoys.advert.common.exception.InnerException;
 import com.alibaba.dubbo.common.json.JSONArray;
@@ -29,21 +30,20 @@ import java.util.Map;
  * 功能描述 : .<br/>
  * 变更记录 : .<br/>
  */
-@Service("advertiserQIService")
+@Service("advertiserService")
 public class AdvertiserServiceImpl extends BaseService implements IAdvertiserService {
 
     @Autowired
-    private IUserDao userDao;
+    private IUserDao           userDao;
 
     @Autowired
-    private IQualificationDao qualificationDao;
+    private IQualificationDao  qualificationDao;
 
     @Autowired
     private IQualAttachmentDao qualAttachmentDao;
 
     @Autowired
-    private IQualVerifyDao qualVerifyDao;
-
+    private IQualVerifyDao     qualVerifyDao;
 
     @Override
     public XiaoMiAdvertiser getAdvertiserDetailForXiaoMi(Long advId) {
@@ -73,13 +73,12 @@ public class AdvertiserServiceImpl extends BaseService implements IAdvertiserSer
         xiaoMiAdvertiser.setMobilePhone(userDto.getMobilePhone());
         xiaoMiAdvertiser.setTelephone(userDto.getTelephone());
 
-
         xiaoMiAdvertiser.setBusinessLicenseNum(qualificationDto.getBusinessLicenseNum());
-        xiaoMiAdvertiser.setBusinessLicensePic(qualificationDto.getBusinessLicenseImagePath());
-        xiaoMiAdvertiser.setIcpPic(qualificationDto.getIcpImagePath());
+        xiaoMiAdvertiser.setBusinessLicensePic(UrlUtils.checkDomain(qualificationDto.getBusinessLicenseImagePath()));
+        xiaoMiAdvertiser.setIcpPic(UrlUtils.checkDomain(qualificationDto.getIcpImagePath()));
         xiaoMiAdvertiser.setIndustry(qualificationDto.getXiaomiIndustry());
         xiaoMiAdvertiser.setTaxRegistryNum(qualificationDto.getTaxRegistryNum());
-        xiaoMiAdvertiser.setTaxRegistryPic(qualificationDto.getTaxRegistryImagePath());
+        xiaoMiAdvertiser.setTaxRegistryPic(UrlUtils.checkDomain(qualificationDto.getTaxRegistryImagePath()));
         xiaoMiAdvertiser.setWebsiteAddress(qualificationDto.getSiteURL());
         xiaoMiAdvertiser.setWebsiteName(qualificationDto.getSiteName());
 
@@ -92,8 +91,8 @@ public class AdvertiserServiceImpl extends BaseService implements IAdvertiserSer
                 JSONObject jsonObject = new JSONObject();
                 qualifications.add(jsonObject);
 
-                jsonObject.put("key", qualAttachmentDto.getId());
-                jsonObject.put("urls", StringTool.getStringListByStr(qualAttachmentDto.getAttachmentName()));
+                jsonObject.put("key", qualAttachmentDto.getAttachmentName());
+                jsonObject.put("url", UrlUtils.checkDomain(qualAttachmentDto.getAttachmentUrl()));
             }
 
             xiaoMiAdvertiser.setQualifications(qualifications);
@@ -108,7 +107,7 @@ public class AdvertiserServiceImpl extends BaseService implements IAdvertiserSer
     }
 
     @Override
-    public boolean isSuccessOrAuditOfstatus(Long advId, int market) {
+    public boolean isSuccessOrAuditOfStatus(Long advId, int market) {
 
         // 审核中、审核通过
         List<Integer> status = new ArrayList<>();
@@ -134,5 +133,10 @@ public class AdvertiserServiceImpl extends BaseService implements IAdvertiserSer
     @Override
     public int insertQIRecord(QualVerifyDto qualVerifyDto) {
         return qualVerifyDao.insert(qualVerifyDto);
+    }
+
+    @Override
+    public boolean updateByMarketId(String marketAdvId, int status, String reason) {
+        return qualVerifyDao.updateByMarketId(marketAdvId, status, reason) == 1;
     }
 }

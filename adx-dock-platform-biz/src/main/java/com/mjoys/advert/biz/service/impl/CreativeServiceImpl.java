@@ -5,10 +5,13 @@ import com.mjoys.advert.biz.dao.ICreativeMarketVerifyDao;
 import com.mjoys.advert.biz.dao.IQualVerifyDao;
 import com.mjoys.advert.biz.dao.ITeamCNTemFieldDao;
 import com.mjoys.advert.biz.dao.ITeamCreativeVerifyDao;
-import com.mjoys.advert.biz.dto.*;
+import com.mjoys.advert.biz.dto.CreativeMarketVerifyDto;
+import com.mjoys.advert.biz.dto.QualVerifyDto;
+import com.mjoys.advert.biz.dto.TeamCNTemFieldDto;
+import com.mjoys.advert.biz.dto.TeamCreativeVerifyDto;
 import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiMaterialDetail;
 import com.mjoys.advert.biz.service.ICreativeService;
-import com.mjoys.advert.biz.utils.StringTool;
+import com.mjoys.advert.biz.utils.UrlUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,6 @@ public class CreativeServiceImpl extends BaseService implements ICreativeService
      */
     private static final String      DEFAULT_CREATIVE_SOURCE_FOR_XIAOMI = "摸象大数据";
 
-
     @Autowired
     private ICreativeMarketVerifyDao creativeMarketVerifyDao;
 
@@ -45,46 +47,72 @@ public class CreativeServiceImpl extends BaseService implements ICreativeService
         // 1.查询推送中的创意列表
         List<CreativeMarketVerifyDto> verifyList = creativeMarketVerifyDao.selectList(Enums.Market.XIAOMI_VALUE,
                                                                                       CreativeMarketVerifyDto.VERIFY_OF_PUSH_IN);
+
         if (CollectionUtils.isEmpty(verifyList)) {
             return ListUtils.EMPTY_LIST;
         }
 
-        // 2.临时转换所需参数
-        // 审核创意ID。用于后续查询创意广告主、模板等信息
-        List<Long> verifyIds = new ArrayList<>(verifyList.size());
         // map<审核创意ID,审核ID>
         Map<Long, Long> creativeVerifyMap = new HashMap<>(verifyList.size());
+        // 查询小米侧广告主ID
+        Set<Long> advIds = new HashSet<>();
+
+        // 2.过滤出原生创意
+        List<TeamCreativeVerifyDto> nativeCreativeList = queryNativeCreative(verifyList, advIds,
+                                                                             creativeVerifyMap);
+
+        // 3.Map<dsp广告主ID,流量市场广告主ID>
+        if (CollectionUtils.isEmpty(nativeCreativeList)) {
+            return ListUtils.EMPTY_LIST;
+        }
+        Map<Long, String> advIdMap = buildMarketAdvIdMap(new ArrayList<>(advIds));
+
+        // 4.构建查询结果
+        return buildMaterialsForXiaoMiRsp(nativeCreativeList, creativeVerifyMap, advIdMap);
+    }
+
+    /**
+     * 查询出原生创意.
+     *
+     * @param verifyList the verify list
+     * @param advIds the adv ids
+     * @param creativeVerifyMap the creative verify map
+     * @return the list
+     */
+    private List<TeamCreativeVerifyDto> queryNativeCreative(List<CreativeMarketVerifyDto> verifyList,
+                                                            Set<Long> advIds,
+                                                            Map<Long, Long> creativeVerifyMap) {
+
+        // 1.临时转换所需参数
+        // 审核创意ID。用于后续查询创意广告主、模板等信息
+        List<Long> verifyIds = new ArrayList<>(verifyList.size());
+
         for (CreativeMarketVerifyDto verify : verifyList) {
             verifyIds.add(verify.getVerifyId());
+            // map<审核创意ID,审核ID>
             creativeVerifyMap.put(verify.getVerifyId(), verify.getId());
         }
 
-        // 3.批量查询创意信息(广告主ID，模板ID，创意ID等)
+        // 2.批量查询创意信息(广告主ID，模板ID，创意ID等)
         List<TeamCreativeVerifyDto> creativeVerifyList = teamCreativeVerifyDao.selectByIds(verifyIds);
         if (CollectionUtils.isEmpty(creativeVerifyList)) {
             return ListUtils.EMPTY_LIST;
         }
 
-        // 4.查询小米侧广告主ID
-        Set<Long> advIds = new HashSet<>();
+        // 3.查询小米侧广告主ID
         for (TeamCreativeVerifyDto creativeVerify : creativeVerifyList) {
             advIds.add(creativeVerify.getAdvId());
         }
 
-        // 5.Map<dsp广告主ID,流量市场广告主ID>
-        Map<Long, String> advIdMap = buildMarketAdvIdMap(new ArrayList<>(advIds));
-
-        // 6.构建查询结果
-        return buildMaterialsForXiaoMiRsp(creativeVerifyList, creativeVerifyMap, advIdMap);
+        return creativeVerifyList;
     }
 
     /**
      * 构建查询创意结果.
      *
      * @param creativeVerifyList the creative verify list
-     * @param creativeVerifyMap  the creative verify map
-     * @param advIdMap           the adv id map
-     *
+     * @param creativeVerifyMap the creative verify map
+     * @param advIdMap the adv id map
      * @return the list
      */
     private List<XiaoMiMaterialDetail> buildMaterialsForXiaoMiRsp(List<TeamCreativeVerifyDto> creativeVerifyList,
@@ -146,10 +174,9 @@ public class CreativeServiceImpl extends BaseService implements ICreativeService
     /**
      * Build failed maps map.
      *
-     * @param creativeVerifyMap  the creative verify map
+     * @param creativeVerifyMap the creative verify map
      * @param creativeVerifyList the creative verify list
-     * @param creativeIds        the creative ids
-     *
+     * @param creativeIds the creative ids
      * @return the map
      */
     private Map<Long, Map<String, Object>> buildFailedMaps(Map<Long, Long> creativeVerifyMap,
@@ -196,10 +223,14 @@ public class CreativeServiceImpl extends BaseService implements ICreativeService
                 xiaoMiMaterial.setTitle(String.valueOf(title));
             }
             xiaoMiMaterial.setSource(DEFAULT_CREATIVE_SOURCE_FOR_XIAOMI);
-            Object imgUrl = failedMap.get("imgurl");
-            if (imgUrl != null) {
-                xiaoMiMaterial.setImgUrl(StringTool.getImageListByStr(String.valueOf(imgUrl)));
-            }
+
+            // imgurl
+            List<String> imgUrls = new ArrayList<>(3);
+            buildXiaoMiCreativeImgUrls(imgUrls, "imgurl1", failedMap);
+            buildXiaoMiCreativeImgUrls(imgUrls, "imgurl2", failedMap);
+            buildXiaoMiCreativeImgUrls(imgUrls, "imgurl3", failedMap);
+            xiaoMiMaterial.setImgUrl(imgUrls);
+
             Object landingUrl = failedMap.get("landingurl");
             if (landingUrl != null) {
                 xiaoMiMaterial.setLandingUrl(String.valueOf(landingUrl));
@@ -221,10 +252,25 @@ public class CreativeServiceImpl extends BaseService implements ICreativeService
                 try {
                     xiaoMiMaterial.setDuration(Integer.valueOf(String.valueOf(strDuration)));
                 } catch (NumberFormatException e) {
-
+                    logger.warn("buildXiaoMiMaterials error", e);
                 }
 
             }
+        }
+    }
+
+    /**
+     * 拼装ImgUrl.
+     *
+     * @param imgUrls the img urls
+     * @param key the key
+     * @param failedMap the failed map
+     */
+    private void buildXiaoMiCreativeImgUrls(List<String> imgUrls, String key,
+                                            Map<String, Object> failedMap) {
+        Object imgUrl = failedMap.get(key);
+        if (imgUrl != null) {
+            imgUrls.add(UrlUtils.checkDomain(String.valueOf(imgUrl)));
         }
     }
 

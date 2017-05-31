@@ -17,6 +17,10 @@ public enum ThirdUrlEnums {
      */
     XIAOMI_ADD_ADVERTISER("/audit/v1/advertiser/add"),
     /**
+     * 小米广告主资质审核接口
+     */
+    XIAOMI_UPDATE_ADVERTISER("/audit/v1/advertiser/update"),
+    /**
      * 小米查询广告主资质审核状态接口
      */
     XIAOMI_QUERY_ADVERTISER_QI("/audit/v1/advertiser/query"),

@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd  
-        http://code.alibabatech.com/schema/dubbo  
-        http://code.alibabatech.com/schema/dubbo/dubbo.xsd ">
-
-    <!-- adx对接平台服务 -->
-    <dubbo:reference id="remoteQIBackendService"
-                     interface="com.mjoys.advert.api.remoteservice.RemoteQIBackendService"
-                     init="true" version="${tuiaCore.consumer.idmaker.version}" retries="0"
-                     check="false" group="default" />
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 </beans>

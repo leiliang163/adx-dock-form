@@ -17,16 +17,15 @@ import java.util.concurrent.TimeUnit;
  * 功能描述 : .<br/>
  * 变更记录 : .<br/>
  */
-@Component
+//@Component
 public class IAdveQITask implements InitializingBean {
 
-    private static final Timer TIMER = new Timer("IAdveQITask");
+    private static final Timer  TIMER  = new Timer("IAdveQITask");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IAdveQITask.class);
 
     @Autowired
-    private IAdvertiserQIBo advertiserQIBo;
-
+    private IAdvertiserQIBo     advertiserQIBo;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -34,11 +33,11 @@ public class IAdveQITask implements InitializingBean {
         // 10分钟后执行， 频率：6小时
         long delay = 1000 * 10l;
 
-        TIMER.scheduleAtFixedRate(exectueAddCreative(), delay, TimeUnit.MINUTES.toMillis(1));
+        TIMER.scheduleAtFixedRate(exectueAddCreative(), delay, TimeUnit.HOURS.toMillis(1));
 
-        TIMER.scheduleAtFixedRate(exectueUpdateCtQIStatus(), delay, TimeUnit.MINUTES.toMillis(1));
+        TIMER.scheduleAtFixedRate(exectueUpdateCtQIStatus(), delay, TimeUnit.HOURS.toMillis(1));
 
-        TIMER.scheduleAtFixedRate(exectueUpdateAdvQIStatus(), delay, TimeUnit.MINUTES.toMillis(1));
+        TIMER.scheduleAtFixedRate(exectueUpdateAdvQIStatus(), delay, TimeUnit.HOURS.toMillis(1));
     }
 
     /**
@@ -68,6 +67,7 @@ public class IAdveQITask implements InitializingBean {
      */
     public TimerTask exectueUpdateCtQIStatus() {
         return new TimerTask() {
+
             @Override
             public void run() {
                 try {
@@ -87,6 +87,7 @@ public class IAdveQITask implements InitializingBean {
      */
     public TimerTask exectueUpdateAdvQIStatus() {
         return new TimerTask() {
+
             @Override
             public void run() {
                 try {

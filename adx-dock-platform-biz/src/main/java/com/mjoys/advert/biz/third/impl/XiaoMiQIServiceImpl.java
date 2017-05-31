@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mjoys.advert.biz.dto.CreativeMarketVerifyDto;
 import com.mjoys.advert.biz.dto.QualVerifyDto;
-import com.mjoys.advert.biz.model.third.xiaomi.*;
+import com.mjoys.advert.biz.model.third.xiaomi.BaseXiaoMi;
+import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiAdvertiser;
+import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiAdvertiserQIStatus;
+import com.mjoys.advert.biz.model.third.xiaomi.XiaoMiMaterialDetail;
 import com.mjoys.advert.biz.service.impl.BaseService;
 import com.mjoys.advert.biz.third.IXiaoMiQIService;
 import com.mjoys.advert.biz.utils.HttpClientUtils;
@@ -34,20 +37,40 @@ import java.util.List;
 @Service("xiaoMiQIService")
 public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService {
 
+    /**
+     * The Xiao mi domain.
+     */
     @Value("${adp.xiaomi.adx.domain}")
     private String xiaoMiDomain;
 
+    /**
+     * The Xiao client id.
+     */
     @Value("${adp.xiaomi.client.id}")
     private String xiaoClientId;
 
+    /**
+     * The Xiao client secret.
+     */
     @Value("${adp.xiaomi.client.secret}")
     private String xiaoClientSecret;
 
     @Override
     public QualVerifyDto addAdvertiser(XiaoMiAdvertiser adv) {
-        logger.info("addAdvertiser begin, the XiaoMiAdvertiser=[{}]", adv);
+        return doCallQualAdvertiser(adv, ThirdUrlEnums.XIAOMI_ADD_ADVERTISER.getThirdUlr());
 
-        PostMethod postMethod = new PostMethod(buildUrl(ThirdUrlEnums.XIAOMI_ADD_ADVERTISER.getThirdUlr()));
+    }
+
+    /**
+     * 执行广告主资质审核操作.
+     *
+     * @param adv the adv
+     * @param url the url
+     * @return the qual verify dto
+     */
+    private QualVerifyDto doCallQualAdvertiser(XiaoMiAdvertiser adv, String url) {
+
+        PostMethod postMethod = new PostMethod(buildUrl(url));
         buildRequestHeader(postMethod);
 
         List<XiaoMiAdvertiser> advList = new ArrayList<>();
@@ -60,7 +83,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
                                                        "application/json", "UTF-8");
             postMethod.setRequestEntity(se);
         } catch (UnsupportedEncodingException e) {
-            logger.error("提交广告主审核失败：", e);
+            logger.error("广告主审核失败：", e);
             throw new InnerException(ErrorCode.E12005, e);
         }
 
@@ -79,7 +102,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
             }
 
         } else {
-            logger.info("addAdvertiser error, the resultJson=[{}]", resultJson);
+            logger.info("doCallQualAdvertiser error, the resultJson=[{}]", resultJson);
 
             // 上传失败
             addRsp.setStatus(QualVerifyDto.STATUS_OF_PUSH_FAILED);
@@ -98,9 +121,13 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
     }
 
     @Override
-    public List<XiaoMiAdvertiserQIStatus> queryAdvertiserQIStatus(List<String> advIds) {
-        logger.info("queryAdvertiserQIStatus begin, the advIds is={}", advIds);
+    public QualVerifyDto updateAdvertiser(XiaoMiAdvertiser adv) {
 
+        return doCallQualAdvertiser(adv, ThirdUrlEnums.XIAOMI_UPDATE_ADVERTISER.getThirdUlr());
+    }
+
+    @Override
+    public List<XiaoMiAdvertiserQIStatus> queryAdvertiserQIStatus(List<String> advIds) {
         GetMethod getMethod = new GetMethod(buildUrl(ThirdUrlEnums.XIAOMI_QUERY_ADVERTISER_QI.getThirdUlr()));
         buildRequestHeader(getMethod);
 
@@ -161,6 +188,12 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
         return creativeMarketVerifyDtos;
     }
 
+    /**
+     * Do add material list.
+     *
+     * @param materials the materials
+     * @return the list
+     */
     private List<CreativeMarketVerifyDto> doAddMaterial(List<XiaoMiMaterialDetail> materials) {
 
         PostMethod postMethod = new PostMethod(buildUrl(ThirdUrlEnums.XIAOMI_ADD_CREATIVE.getThirdUlr()));
@@ -202,7 +235,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 是否成功， 状态码为0代表成功
      *
      * @param jsonObject json对象
-     * @return true：状态码为0；反正为false
+     * @return true ：状态码为0；反正为false
      */
     private boolean isXiaoMiSuccess(JSONObject jsonObject) {
         return BaseXiaoMi.SUCCESS.equals(jsonObject.getString("code"));
@@ -222,7 +255,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 构建推送创意结果对象
      *
      * @param object json对象
-     * @return 创意结果对象
+     * @return 创意结果对象 creative market verify dto
      */
     private CreativeMarketVerifyDto buildCreativeMarketVerify(JSONObject object) {
         CreativeMarketVerifyDto addMaterialRsp = new CreativeMarketVerifyDto();
@@ -238,7 +271,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 执行批量查询创意审核状态
      *
      * @param materialIds 创意ID列表
-     * @return 小米素材审核状态对象列表
+     * @return 小米素材审核状态对象列表 list
      */
     private List<CreativeMarketVerifyDto> doQueryMaterialQIStatus(List<String> materialIds) {
         GetMethod getMethod = new GetMethod(buildUrl(ThirdUrlEnums.XIAOMI_QUERY_CREATIVE_QI.getThirdUlr()));
@@ -309,7 +342,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 构建创意审核状态结果对象
      *
      * @param object json对象
-     * @return 小米素材审核状态
+     * @return 小米素材审核状态 creative market verify dto
      */
     private CreativeMarketVerifyDto buildCreativeQIStatus(JSONObject object) {
         CreativeMarketVerifyDto xiaoMiMaterialQIStatus = new CreativeMarketVerifyDto();
@@ -325,7 +358,6 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 流量市场侧创意审核状态转换为DSP端审核状态.
      *
      * @param marketVerfyStatus the market verfy status
-     *
      * @return the int
      */
     private int creativeVerfyStatusSwitch(int marketVerfyStatus) {
@@ -342,7 +374,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
     /**
      * 获取小米鉴权token
      *
-     * @return 鉴权token
+     * @return 鉴权token token
      */
     private String getToken() {
 
@@ -353,6 +385,9 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
         params[0] = new NameValuePair("clientId", xiaoClientId);
         params[1] = new NameValuePair("clientSecret", xiaoClientSecret);
         getMethod.setQueryString(params);
+
+        logger.info("xiaoClientId=[{}], and the xiaoClientSecret=[{}]", xiaoClientId,
+                    xiaoClientSecret);
 
         JSONObject resultJson = buildMethodResult(getMethod);
         if (isXiaoMiSuccess(resultJson)) {
@@ -368,9 +403,10 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 构建请求URL
      *
      * @param srcUrl 接口url
-     * @return 调用链接：domain+URL
+     * @return 调用链接 ：domain+URL
      */
     private String buildUrl(String srcUrl) {
+        logger.info("xiaoMiDomain=[{}]", xiaoMiDomain);
         return xiaoMiDomain + srcUrl;
     }
 
@@ -378,7 +414,7 @@ public class XiaoMiQIServiceImpl extends BaseService implements IXiaoMiQIService
      * 执行远程调用，并把结果转换成JSON格式
      *
      * @param method HttpMethod
-     * @return 调用结果json对象
+     * @return 调用结果json对象 json object
      */
     private JSONObject buildMethodResult(HttpMethod method) {
         return JSONObject.parseObject(HttpClientUtils.doHttpRequest(method));

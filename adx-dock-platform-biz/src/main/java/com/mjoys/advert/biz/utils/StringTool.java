@@ -13,11 +13,6 @@ import java.util.List;
 public class StringTool {
 
     /**
-     * 图片前缀.
-     */
-    private static final String IMAGE_PREFIX = "http://tr.mjoys.com";
-
-    /**
      * 把一个2,44,51,34,123,123,4（都是数字）形式的字符串解析成一个List<Long>.
      *
      * @param arrayStr the array str
@@ -75,39 +70,5 @@ public class StringTool {
             return Collections.emptyList();
         }
 
-    }
-
-    /**
-     * string 转成List<String>.<br>
-     * 分隔符为","
-     *
-     * @param srcImagList the src imag list
-     * @return the string list by str
-     */
-    public static List<String> getImageListByStr(String srcImagList) {
-
-        if (!StringUtils.isBlank(srcImagList)) {
-            List<String> list = new ArrayList<>();
-            String[] array = srcImagList.split(",");
-            for (String s : array) {
-
-                list.add(isHaveDomain(s) ? s : IMAGE_PREFIX + s);
-            }
-            return list;
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    /**
-     * 是否有域名.<br/>
-     * 如果以http://tr.mjoys.com或者https://tr.mjoys.com开头<br/>
-     * 则表示有域名，返回true；反正返回false
-     *
-     * @param src the src
-     * @return the boolean
-     */
-    private static boolean isHaveDomain(String src) {
-        return src.startsWith(IMAGE_PREFIX) || src.startsWith("https://tr.mjoys.com");
     }
 }

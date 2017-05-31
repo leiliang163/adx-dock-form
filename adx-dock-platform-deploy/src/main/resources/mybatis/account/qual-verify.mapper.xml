@@ -89,4 +89,11 @@
         </foreach>
     </select>
 
+    <!-- 修改审核状态 -->
+    <update id="updateByMarketId" parameterType="java.util.Map">
+            update ads.t_qualification_verify
+            set status=#{status}, reason=#{reason},TIME_MODIFIED=now()
+            where market_advid = #{marketAdvId}
+    </update>
+
 </mapper>

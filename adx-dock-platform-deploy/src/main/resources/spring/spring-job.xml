@@ -11,11 +11,12 @@
                         http://www.dangdang.com/schema/ddframe/job/job.xsd
                         ">
     <!--配置作业注册中心 -->
-    <reg:zookeeper id="regCenter" serverLists="${adp.zookeeper.address}" namespace="mjoys-job"
-                   baseSleepTimeMilliseconds="1000" maxSleepTimeMilliseconds="3000" maxRetries="3"/>
+    <reg:zookeeper id="regCenter" server-lists="${adp.zookeeper.address}" namespace="mjoys-job"
+                   base-sleep-time-milliseconds="1000"
+                   max-sleep-time-milliseconds="3000" max-retries="3"/>
 
-    <!-- 更新广告主审核状态作业-->
-    <job:bean  id="updateAdvertiserQIStatusJob" class="com.mjoys.advert.deploy.job.UpdateAdvertiserQIStatusJob"
-              regCenter="regCenter" cron="0/30 * * * * ?" shardingTotalCount="1" disabled="false" overwrite="true"/>
-
+    <!-- 配置作业-->
+    <job:simple id="updateAdvertiserQIStatusJob" class="com.mjoys.advert.deploy.job.UpdateAdvertiserQIStatusJob"
+                registry-center-ref="regCenter" cron="*/3 * * * * ?"
+                sharding-total-count="2" sharding-item-parameters="0=A,1=B"/>
 </beans>

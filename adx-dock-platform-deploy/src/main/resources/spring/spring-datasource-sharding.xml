@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.dangdang.com/schema/ddframe/rdb
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
+
+    <rdb:strategy id="databaseStrategy" sharding-columns="user_id"
+                  algorithm-class="com.mjoys.advert.deploy.sharding.MjoysSingleKeyDatabaseShardingAlgorithm"/>
+
+    <rdb:strategy id="tableStrategy" sharding-columns="order_id"
+                  algorithm-class="com.mjoys.advert.deploy.sharding.MjoysSingleKeyTableShardingAlgorithm"/>
+
+
+    <rdb:data-source id="shardingDataSource">
+        <rdb:sharding-rule data-sources="adsDataSource">
+            <rdb:table-rules>
+                <rdb:table-rule logic-table="t_order" actual-tables="t_order_0,t_order_1"
+                                table-strategy="tableStrategy"/>
+                <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_0,t_order_item_1"
+                                 table-strategy="tableStrategy"/>
+            </rdb:table-rules>
+            <rdb:default-database-strategy sharding-columns="none"
+                                           algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
+        </rdb:sharding-rule>
+    </rdb:data-source>
+
+</beans>

@@ -81,7 +81,7 @@
     
     
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="ERROR-CODE-FILE"/>
         <appender-ref ref="PROJECT-CONSOLE"/>
         <appender-ref ref="INFO-CODE-FILE"/>

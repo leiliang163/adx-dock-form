@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mjoys.advert.biz.dao.impl.OrderDaoImpl">
+
+    <!-- 查询用户信息 -->
+    <select id="selectUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+        user_id
+        FROM t_order
+        WHERE order_id=#{orderId}
+    </select>
+
+</mapper>

@@ -1,20 +1,11 @@
 package com.mjoys.advert.biz.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j;
-
 /**
  * 创 建 人 : leiliang.<br/>
  * 创建时间 : 2017/5/17 15:31.<br/>
  * 功能描述 : 创意系列.<br/>
  * 变更记录 : .<br/>
  */
-@Data
-@Log4j
-@NoArgsConstructor
-@AllArgsConstructor
 public class CreativeSeriesDto extends BaseDto {
 
     /**
@@ -50,9 +41,59 @@ public class CreativeSeriesDto extends BaseDto {
      */
     private int             isFilterGoodsStandaro;
 
-    public static void main(String[] args) {
-        CreativeSeriesDto a = new CreativeSeriesDto();
-        a.getFitFlowType();
-        System.out.printf("");
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getGategory() {
+        return gategory;
+    }
+
+    public void setGategory(String gategory) {
+        this.gategory = gategory;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getFitFlowType() {
+        return fitFlowType;
+    }
+
+    public void setFitFlowType(String fitFlowType) {
+        this.fitFlowType = fitFlowType;
+    }
+
+    public String getFitPlatform() {
+        return fitPlatform;
+    }
+
+    public void setFitPlatform(String fitPlatform) {
+        this.fitPlatform = fitPlatform;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getIsFilterGoodsStandaro() {
+        return isFilterGoodsStandaro;
+    }
+
+    public void setIsFilterGoodsStandaro(int isFilterGoodsStandaro) {
+        this.isFilterGoodsStandaro = isFilterGoodsStandaro;
     }
 }

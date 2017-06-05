@@ -1,6 +1,9 @@
 package com.mjoys.advert.biz.dto;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j;
 
 /**
  * 创 建 人 : leiliang.<br/>
@@ -8,6 +11,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 功能描述 : .<br/>
  * 变更记录 : .<br/>
  */
+@Data
+@Log4j
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreativeMarketVerifyDto extends BaseDto {
 
     private static final long serialVersionUID        = 1468732344070278793L;
@@ -59,68 +66,4 @@ public class CreativeMarketVerifyDto extends BaseDto {
 
     /* 谷歌过滤原因 */
     private String            gooleRefuseReason;
-
-    public Long getVerifyId() {
-        return verifyId;
-    }
-
-    public void setVerifyId(Long verifyId) {
-        this.verifyId = verifyId;
-    }
-
-    public int getMarket() {
-        return market;
-    }
-
-    public void setMarket(int market) {
-        this.market = market;
-    }
-
-    public int getVerifyStatus() {
-        return verifyStatus;
-    }
-
-    public void setVerifyStatus(int verifyStatus) {
-        this.verifyStatus = verifyStatus;
-    }
-
-    public String getRefuseReason() {
-        return refuseReason;
-    }
-
-    public void setRefuseReason(String refuseReason) {
-        this.refuseReason = refuseReason;
-    }
-
-    public int getGoodleStatus() {
-        return goodleStatus;
-    }
-
-    public void setGoodleStatus(int goodleStatus) {
-        this.goodleStatus = goodleStatus;
-    }
-
-    public String getGooleRefuseReason() {
-        return gooleRefuseReason;
-    }
-
-    public void setGooleRefuseReason(String gooleRefuseReason) {
-        this.gooleRefuseReason = gooleRefuseReason;
-    }
-
-    public String getMarketCreativeId() {
-        return marketCreativeId;
-    }
-
-    public void setMarketCreativeId(String marketCreativeId) {
-        this.marketCreativeId = marketCreativeId;
-    }
-
-    public Long getCreativeId() {
-        return creativeId;
-    }
-
-    public void setCreativeId(Long creativeId) {
-        this.creativeId = creativeId;
-    }
 }

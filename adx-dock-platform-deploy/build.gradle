@@ -30,7 +30,7 @@ apply plugin: 'idea'
 
 jar {
     baseName = 'adx-dock-platform'
-    version = '0.1.0'
+    version =  '0.1.0'
     manifest { attributes 'Main-Class': 'com.lei.liang.Application' }
 }
 
@@ -44,6 +44,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-test")
     compile('org.apache.commons:commons-dbcp2')
 
-    compile("com.dangdang:elastic-job-core")
-    compile("com.dangdang:elastic-job-spring")
+    compile('com.dangdang:elastic-job-lite-core')
+    compile('com.dangdang:elastic-job-lite-spring')
+
+    compile('com.dangdang:sharding-jdbc-config-spring')
+    compile('com.dangdang:sharding-jdbc-core')
 }
